@@ -20,7 +20,7 @@ var cube= [[-c,-c,-c],
 var cubeEdges=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
 
 var cubeFace=[[0,1,2,3],[4,5,6,7],[0,1,5,4],[2,3,7,6],[0,3,7,4],[1,2,6,5]];
-var faceColor=['rgb(255, 0, 0)','rgb(0,255, 0)','rgb(0, 0, 255)','rgb(255,120,0)','rgb(255,255,0)','rgb(255,255,255)'];
+var faceColor=['rgb(255, 0, 0)','rgb(0,055, 0)','rgb(0, 0, 255)','rgb(255,120,0)','rgb(255,255,0)','rgb(0,155,255)'];
 
 
 //adding camera
@@ -80,7 +80,7 @@ var camera =function()
       x/=8000;
       y/=8000;
 
-      console.log(x,y);
+     // console.log(x,y);
       this.rotation[0]+=y;  //this is where we define that rotation0 for for y movement 
        this.rotation[1]+=x;
     }
@@ -103,10 +103,136 @@ function rotate2D(pos,rad)
 
 function draw()
 {
- // radian++;
+
   ctx.clearRect(0, 0, 2*dx, 2*dy);
   //drawEdges();
-  requestAnimationFrame(draw);
+
+
+
+  var vertexList=[];
+   var screen_coords=[];
+
+  //  for (var vertex of cube)
+  //  {
+    
+  //     [x,y,z]=vertex;
+  //   //  console.log("array",vertex);
+  //     x-=cam.positon[0];
+  //     y-=cam.positon[1];
+  //     z-=cam.positon[2];
+      
+  //     [a,b]=rotate2D([x,z],cam.rotation[1]);
+  //     x=a;
+  //     z=b;
+      
+  //     vertexList.push([x,y,z]);
+   
+  //     f=200/(z/3);
+  //     x=x*f;
+  //     y=y*f;
+
+  //     screen_coords.push([x + dx, y  ]);
+  //  }
+
+
+
+
+
+    for ( var i of  cube)
+    {
+      
+        var [q,w,e]=i;
+
+        q-=cam.positon[0];
+        w-=cam.positon[1];
+        e-=cam.positon[2];
+
+        [v,d]=rotate2D([q,e],cam.rotation[1]);
+        q=v;
+        e=d;
+      
+      
+        vertexList.push([q,w,e]);
+      
+       f=200/(e/3);
+        q=q*f;
+       w=w*f;
+      // console.log("q,w",q,w);
+       
+       screen_coords.push([q+dx,w+dy]);
+  
+    }
+
+    //console.log(vertexList);
+    //console.log(screen_coords);
+
+
+
+    facesList=[];
+    facColor=[];
+    var onscreen;
+   var counter=0;
+
+
+    for (face of cubeFace) {
+
+      onscreen=false;
+      for ( vertex of face)
+      {
+          if(vertexList[vertex][2]>0)
+          {
+            onscreen=true;
+          }
+          else{
+            onscreen=false;
+            break;
+          }
+      }
+
+      if(onscreen)
+      {
+        var coords=[];
+        for(var i of face)
+        {
+          coords.push(screen_coords[i]);
+        }
+        
+        facesList.push(coords);
+        facColor.push(faceColor[counter]);
+        counter++;
+      }
+    }
+
+
+
+  for (var j = 0, n_faces = facesList.length; j < n_faces; ++j) {
+    // Current face
+ 
+    var face = facesList[j];
+    ctx.beginPath();
+    
+  
+    ctx.moveTo(face[0][0], face[0][1]);
+
+
+    // Draw the other vertices
+    for (var k = 1, n_vertices = face.length; k < n_vertices; ++k) {
+
+
+      ctx.lineTo(face[k][0], face[k][1]);
+
+    }
+
+    // Close the path and draw the face
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fillStyle = faceColor[j];
+      ctx.fill();
+  
+   
+  }
+
+ requestAnimationFrame(draw);
 }
 
 
@@ -124,7 +250,7 @@ function drawEdges()
       [a,b]=rotate2D([x,z],cam.rotation[1]);
       x=a;
       z=b;
-
+     
       // [c,d]=rotate2D([y,z],cam.rotation[0]);
       // y=c;
       // z=d;
@@ -132,7 +258,7 @@ function drawEdges()
        f=200/(z/3);
        x=x*f;
        y=y*f;
-
+   
        ctx.beginPath();
        ctx.moveTo(x + dx, y + dy);
 
@@ -159,6 +285,7 @@ function drawEdges()
       ctx.lineTo(x + dx, y + dy);
       ctx.closePath();
       ctx.stroke();
+     
     }
 }
 
@@ -167,10 +294,8 @@ function init()
 { 
    cam=new camera();
   cam.init([0,0,-20]);
-  //cam.printpos();
-
-
-  faces=[];
+  //cam.printpos()
+  
   draw()
 }
 
