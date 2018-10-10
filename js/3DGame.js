@@ -3,11 +3,14 @@ const ctx=canvas.getContext('2d');
 const dx = canvas.width / 2;
 const dy = canvas.height / 2;
 var cam;
+var w=1000;
+var h=1000;
 var oldmousex=0;
 var oldmousey=0;
 //var radian=0;
 
 var c=3;
+var v=10;
 var cube= [[-c,-c,-c],
             [c,-c,-c],
             [c,c,-c],
@@ -17,10 +20,19 @@ var cube= [[-c,-c,-c],
             [c,c,c],
             [-c,c,c]];
 
+ var cube2= [[-v,-v,-v],
+            [v,-v,-v],
+            [v,v,-v],
+            [-v,v,-v],
+            [-v,-v,v],
+            [v,-v,v],
+            [v,v,v],
+            [-v,v,v]];
+
 var cubeEdges=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
 
 var cubeFace=[[0,1,2,3],[4,5,6,7],[0,1,5,4],[2,3,7,6],[0,3,7,4],[1,2,6,5]];
-var faceColor=['rgb(255, 0, 0)','rgb(0,055, 0)','rgb(0, 0, 255)','rgb(255,120,0)','rgb(255,255,0)','rgb(0,155,255)'];
+var faceColor=['rgb(255, 0, 0)','rgb(0,155, 0)','rgb(0, 0, 255)','rgb(255,20,0)','rgb(255,255,0)','rgb(0,155,255)'];
 
 
 //adding camera
@@ -34,23 +46,18 @@ var camera =function()
 
   this.mousedown=false;
 
-
   //here rotation[0]---this is the rotation of x axis
   //then rotation[1]---this is the rotation of y axis
+
   this.init=function(positon=[0,0,0],rotation=[0,0])
   {
     this.positon=positon;
     this.rotation=rotation;
   }
 
-  this.printpos=function()
-  {
-    console.log(this.positon);
-  }
-
   this.update=function(key)
   { 
-    var s=2;
+    var s=3;
  
     if(key==="KeyE") { this.positon[1]-=s; }
     if(key==="KeyQ") { this.positon[1]+=s; }
@@ -59,7 +66,7 @@ var camera =function()
     y=s*Math.cos(this.rotation[1]);
     
    
-    //thi works as we are still working with increasing the distance and not anything else
+    //this works as we are still working with increasing the distance and not anything else
     if(key==="KeyW") { this.positon[0]+=x; this.positon[2]+=y; }
     if(key==="KeyS") { this.positon[0]-=x; this.positon[2]-=y; }
     if(key==="KeyA") { this.positon[0]-=y; this.positon[2]+=x; }
@@ -75,14 +82,13 @@ var camera =function()
 
       x = oldmousex - event.clientX;
       y = oldmousey - event.clientY;
-    
-      
+  
+      //controlling the sensativity so that rotation does not happen very fast
       x/=8000;
       y/=8000;
 
-     // console.log(x,y);
       this.rotation[0]+=y;  //this is where we define that rotation0 for for y movement 
-       this.rotation[1]+=x;
+      this.rotation[1]+=x;
     }
 
   }
@@ -94,48 +100,20 @@ function rotate2D(pos,rad)
   [x,y]=pos;
   s=Math.sin(rad);
   c=Math.cos(rad);
-
   return [x*c-y*s,y*c+x*s];
 }
 
 
 
 
-function draw()
+function draw(objects)
 {
 
   ctx.clearRect(0, 0, 2*dx, 2*dy);
   //drawEdges();
 
-
-
   var vertexList=[];
-   var screen_coords=[];
-
-  //  for (var vertex of cube)
-  //  {
-    
-  //     [x,y,z]=vertex;
-  //   //  console.log("array",vertex);
-  //     x-=cam.positon[0];
-  //     y-=cam.positon[1];
-  //     z-=cam.positon[2];
-      
-  //     [a,b]=rotate2D([x,z],cam.rotation[1]);
-  //     x=a;
-  //     z=b;
-      
-  //     vertexList.push([x,y,z]);
-   
-  //     f=200/(z/3);
-  //     x=x*f;
-  //     y=y*f;
-
-  //     screen_coords.push([x + dx, y  ]);
-  //  }
-
-
-
+  var screen_coords=[];
 
 
     for ( var i of  cube)
@@ -155,22 +133,19 @@ function draw()
         vertexList.push([q,w,e]);
       
        f=200/(e/3);
-        q=q*f;
+       q=q*f;
        w=w*f;
-      // console.log("q,w",q,w);
        
        screen_coords.push([q+dx,w+dy]);
   
     }
 
-    //console.log(vertexList);
-    //console.log(screen_coords);
-
-
 
     facesList=[];
     facColor=[];
+    depth=[];
     var onscreen;
+    mindist=[];
    var counter=0;
 
 
@@ -179,7 +154,8 @@ function draw()
       onscreen=false;
       for ( vertex of face)
       {
-          if(vertexList[vertex][2]>0)
+          x,y=screen_coords[i];
+          if(vertexList[vertex][2]>0 )
           {
             onscreen=true;
           }
@@ -188,6 +164,24 @@ function draw()
             break;
           }
       }
+
+      // var min=500000;
+      // for ( vertex of face)
+      // {
+      //   var [x1,y1,z1]=vertex;
+
+      //   xp=Math.pow((x2 - x1),2);
+      //   yp=Math.pow((y2 - y1),2);
+      //   zp=Math.pow((z2 - z1),2);
+      //   d = Math.pow((xp+yp+zp),1/2);
+        
+      //   if(min<d)
+      //   {
+      //     min=d;
+      //   }
+      // }
+
+      // mindist.push(min);
 
       if(onscreen)
       {
@@ -200,25 +194,62 @@ function draw()
         facesList.push(coords);
         facColor.push(faceColor[counter]);
         counter++;
+
+        var total=0;
+        for(var i=0;i<3;i++)
+        {
+          var sum=0;
+          for(j of face)
+          {
+            sum+=vertexList[j][i]/4;
+           // console.log(j,vertexList[j][i]);
+          }
+          
+         sum=sum*sum;
+          total+=sum;
+         
+        }
+       // total=total*total;
+        depth.push(total);
       }
+
+      
+    } 
+
+    //sorting
+    //console.log(mindist);
+    temp=Object.assign([],depth);
+  
+    depth.sort();
+    console.log(depth);
+
+    var index=[];
+    for(var i=0;i<depth.length;i++)
+    {
+
+      test=temp.indexOf(depth[i]);
+      temp[test]=-100;
+      index.push(test);
     }
 
 
-
-  for (var j = 0, n_faces = facesList.length; j < n_faces; ++j) {
-    // Current face
  
-    var face = facesList[j];
+
+    //sorting 2
+
+    
+
+
+    for (var j=index.length-1;j>=0;j--) {
+
+    var face = facesList[index[j]];  //remember to use index
     ctx.beginPath();
     
-  
     ctx.moveTo(face[0][0], face[0][1]);
 
 
     // Draw the other vertices
     for (var k = 1, n_vertices = face.length; k < n_vertices; ++k) {
-
-
       ctx.lineTo(face[k][0], face[k][1]);
 
     }
@@ -226,10 +257,8 @@ function draw()
     // Close the path and draw the face
     ctx.closePath();
     ctx.stroke();
-    ctx.fillStyle = faceColor[j];
-      ctx.fill();
-  
-   
+    ctx.fillStyle = faceColor[index[j]];
+    ctx.fill(); 
   }
 
  requestAnimationFrame(draw);
@@ -294,8 +323,6 @@ function init()
 { 
    cam=new camera();
   cam.init([0,0,-20]);
-  //cam.printpos()
-  
   draw()
 }
 
@@ -316,3 +343,4 @@ document.addEventListener("keydown",move);
 document.addEventListener("mousedown",mousedown);
 document.addEventListener("mousemove",mouse);
 document.addEventListener("mouseup",mouseup);
+
