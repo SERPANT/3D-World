@@ -1,17 +1,27 @@
 const canvas=document.getElementsByClassName('canvas')[0]
 const ctx=canvas.getContext('2d');
-const dx = canvas.width / 2;
-const dy = canvas.height / 2;
+const canvasWidth = canvas.width / 2;
+const canvasHeight= canvas.height / 2;
+const dx=500;
+const dy=500;
 var cam;
 var w=1000;
 var h=1000;
 var oldmousex=0;
 var oldmousey=0;
+var objects=[];
 //var radian=0;
 
-var c=3;
+
 var v=10;
-var cube= [[-c,-c,-c],
+
+
+var CubeObject= function()
+{
+  var c=3;
+  this.verti=[];
+
+  var cube= [[-c,-c,-c],
             [c,-c,-c],
             [c,c,-c],
             [-c,c,-c],
@@ -20,21 +30,47 @@ var cube= [[-c,-c,-c],
             [c,c,c],
             [-c,c,c]];
 
- var cube2= [[-v,-v,-v],
-            [v,-v,-v],
-            [v,v,-v],
-            [-v,v,-v],
-            [-v,-v,v],
-            [v,-v,v],
-            [v,v,v],
-            [-v,v,v]];
+            
+this.cubeFace=[[0,1,2,3],
+              [4,5,6,7],
+              [0,1,5,4],
+              [2,3,7,6],
+              [0,3,7,4],
+              [1,2,6,5]];
 
-var cubeEdges=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+// this.faceColor=['rgb(110, 110, 255)',
+//               'rgb(0,155, 0)',
+//               'rgb(0, 0, 255)',
+//               'rgb(255,20,100)',
+//               'rgb(255,255,0)',
+//               'rgb(0,155,255)'];
+// this.faceColor=['gray',
+//               'gray',
+//               'gray',
+//               'gray',
+//               'gray',
+//               'gray'];
+this.color;
 
-var cubeFace=[[0,1,2,3],[4,5,6,7],[0,1,5,4],[2,3,7,6],[0,3,7,4],[1,2,6,5]];
-var faceColor=['rgb(255, 0, 0)','rgb(0,155, 0)','rgb(0, 0, 255)','rgb(255,20,0)','rgb(255,255,0)','rgb(0,155,255)'];
+this.init=function(pos=[0,0,0],color='red')
+                {
+                   var [ x,y,z ]=pos;
+
+                    for(i in cube)
+                    {
+                      var [X,Y,Z]=cube[i];
+                      this.verti.push([[x+X],[y+Y],[z+Z]]);
+                    }
+                    this.color=color; 
+                }
+}
 
 
+
+
+
+
+//var cubeEdges=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
 //adding camera
 
 var camera =function()
@@ -57,13 +93,16 @@ var camera =function()
 
   this.update=function(key)
   { 
-    var s=3;
+    var s=5;
  
     if(key==="KeyE") { this.positon[1]-=s; }
     if(key==="KeyQ") { this.positon[1]+=s; }
 
+
+    //this is the movement required so as the insure the correct rotation
+    //this is rotation 1 as we are taking the x axis for transformation 
     x=s*Math.sin(this.rotation[1]);
-    y=s*Math.cos(this.rotation[1]);
+    y=s*Math.cos(this.rotation[1]);  //this y is for z axis
     
    
     //this works as we are still working with increasing the distance and not anything else
@@ -71,6 +110,11 @@ var camera =function()
     if(key==="KeyS") { this.positon[0]-=x; this.positon[2]-=y; }
     if(key==="KeyA") { this.positon[0]-=y; this.positon[2]+=x; }
     if(key==="KeyD") { this.positon[0]+=y; this.positon[2]-=x; }
+
+    // if(key==="KeyW") {  this.positon[2]+=s; }
+    // if(key==="KeyS") {  this.positon[2]-=s; }
+    // if(key==="KeyA") { this.positon[0]-=s; }
+    // if(key==="KeyD") { this.positon[0]+=s;  }
  
   }
 
@@ -84,11 +128,11 @@ var camera =function()
       y = oldmousey - event.clientY;
   
       //controlling the sensativity so that rotation does not happen very fast
-      x/=8000;
-      y/=8000;
+      x/=1000;
+      y/=1000;
 
-      this.rotation[0]+=y;  //this is where we define that rotation0 for for y movement 
-      this.rotation[1]+=x;
+      this.rotation[0]+=y;  //rotation arround x axis
+      this.rotation[1]+=x;   //rotation arround y axis
     }
 
   }
@@ -106,12 +150,17 @@ function rotate2D(pos,rad)
 
 
 
-function draw(objects)
+function draw()
 {
 
-  ctx.clearRect(0, 0, 2*dx, 2*dy);
+  ctx.clearRect(0, 0, 2*canvasWidth, 2*canvasHeight);
   //drawEdges();
 
+  for(var cubeObject of objects)
+  {
+  //  console.log(cubeObject);
+
+  cube=cubeObject.verti;
   var vertexList=[];
   var screen_coords=[];
 
@@ -149,8 +198,9 @@ function draw(objects)
    var counter=0;
 
 
-    for (face of cubeFace) {
+    for (face of cubeObject.cubeFace) {
 
+   
       onscreen=false;
       for ( vertex of face)
       {
@@ -189,10 +239,12 @@ function draw(objects)
         for(var i of face)
         {
           coords.push(screen_coords[i]);
+          //put code here............................................
         }
         
         facesList.push(coords);
-        facColor.push(faceColor[counter]);
+      
+        facColor.push(cubeObject.color);
         counter++;
 
         var total=0;
@@ -221,7 +273,7 @@ function draw(objects)
     temp=Object.assign([],depth);
   
     depth.sort();
-    console.log(depth);
+   // console.log(depth);
 
     var index=[];
     for(var i=0;i<depth.length;i++)
@@ -237,6 +289,7 @@ function draw(objects)
 
     //sorting 2
 
+    
     
 
 
@@ -256,11 +309,13 @@ function draw(objects)
 
     // Close the path and draw the face
     ctx.closePath();
-    ctx.stroke();
-    ctx.fillStyle = faceColor[index[j]];
+    //ctx.stroke();
+    ctx.fillStyle = cubeObject.color
     ctx.fill(); 
   }
+}
 
+//setTimeout(draw,1000/60);
  requestAnimationFrame(draw);
 }
 
@@ -322,8 +377,74 @@ function drawEdges()
 function init()
 { 
    cam=new camera();
-  cam.init([0,0,-20]);
-  draw()
+  cam.init([0,-140,-70]);
+
+ 
+objects=Object.assign([],makeRoad(0));
+cubeOb=new CubeObject();
+cubeOb.init([0,0,-100]);
+objects.push(cubeOb);
+
+
+
+
+  draw();
+}
+
+
+function makeWall(z)
+{
+
+  arr=[];
+
+  cubeOb=new CubeObject();
+  cubeOb.init([0,0,z],'white');
+  arr.push(cubeOb);
+  for(var i=8;i<50;i=i+10)
+  {
+    for(var j=0;j<50;j=j+2)
+    {
+      cubeOb=new CubeObject();
+      cubeOb.init([-i,-j,z],'gray');
+      arr.push(cubeOb);
+
+      cubeOb=new CubeObject();
+      cubeOb.init([i,-j,z],'gray');
+      arr.push(cubeOb);
+    }
+    
+  }
+  return arr;
+}
+
+
+function makeRoad(y)
+{
+
+  arr=[];
+
+  for(var j=20;j<250;j=j+6){
+  cubeOb=new CubeObject();
+  cubeOb.init([0,y,j],'white');
+  arr.push(cubeOb);
+  }
+
+  
+  for(var i=6;i<150;i=i+6)
+  {
+    for(var j=20;j<250;j=j+6)
+    {
+      cubeOb=new CubeObject();
+      cubeOb.init([-i,y,j],'gray');
+      arr.push(cubeOb);
+
+      cubeOb=new CubeObject();
+      cubeOb.init([i,y,j],'gray');
+      arr.push(cubeOb);
+    }
+    
+  }
+  return arr;
 }
 
 function move(event) { cam.update(event.code); }
