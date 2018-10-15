@@ -33,7 +33,6 @@ function Game(canv) {
     cubeOb.init([0, 0, -100]);
     objects.push(cubeOb);
     makeWall();
-    console.log(objects.length);
     draw();
   };
 
@@ -71,7 +70,7 @@ function Game(canv) {
     return [q, w];
   }
 
-  function drawCube(facesList, color) {
+  function drawCube(facesList, color, type) {
     for (j in facesList) {
       var face = facesList[j];
       ctx.beginPath();
@@ -85,7 +84,9 @@ function Game(canv) {
 
       // Close the path and draw the face
       ctx.closePath();
-      ctx.stroke();
+      if (type === 0) {
+        ctx.stroke();
+      }
       ctx.fillStyle = color;
       ctx.fill();
     }
@@ -144,7 +145,8 @@ function Game(canv) {
         }
       }
 
-      drawCube(facesList, cubeObject.color);
+      console.log(cubeObject.Type);
+      drawCube(facesList, cubeObject.color, cubeObject.Type);
     }
     requestAnimationFrame(draw);
   }
@@ -174,18 +176,18 @@ function Game(canv) {
 
     for (var j = 20; j < 300; j = j + 20) {
       cubeOb = new CubeObject();
-      cubeOb.init([0, y, j], "white");
+      cubeOb.init([0, y, j], "white", 1);
       arr.push(cubeOb);
     }
 
     for (var i = 20; i < 200; i = i + 20) {
       for (var j = 20; j < 300; j = j + 20) {
         cubeOb = new CubeObject();
-        cubeOb.init([-i, y, j], "gray");
+        cubeOb.init([-i, y, j], "gray", 1);
         arr.push(cubeOb);
 
         cubeOb = new CubeObject();
-        cubeOb.init([i, y, j], "gray");
+        cubeOb.init([i, y, j], "gray", 1);
         arr.push(cubeOb);
       }
     }
