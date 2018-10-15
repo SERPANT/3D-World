@@ -20,6 +20,14 @@ function Game(canv) {
     [50, 0, 320, 50, 70, "green"]
   ];
 
+  // var map = [
+  //   [150, 0, 720, 50, 150, "gold"],
+  //   [-150, 0, 680, 200, 150, "gold"],
+  //   [-150, 0, 520, 50, 150, "gold"],
+  //   [-150, 0, 320, 50, 60, "gold"],
+  //   [50, 0, 320, 50, 70, "gold"]
+  // ];
+
   var v = 10;
 
   this.init = function(canv) {
@@ -33,8 +41,13 @@ function Game(canv) {
     cubeOb.init([0, 0, -100]);
     objects.push(cubeOb);
     makeWall();
-    draw();
+    gameLoop();
   };
+
+  function gameLoop() {
+    draw();
+    requestAnimationFrame(gameLoop);
+  }
 
   function setupCanvas(canv) {
     canvas = canv;
@@ -145,10 +158,8 @@ function Game(canv) {
         }
       }
 
-      console.log(cubeObject.Type);
       drawCube(facesList, cubeObject.color, cubeObject.Type);
     }
-    requestAnimationFrame(draw);
   }
 
   function makeWall() {
