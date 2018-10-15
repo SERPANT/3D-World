@@ -37,9 +37,9 @@ function Game(canv) {
     cam.init([0, -220, -250]);
 
     //objects = Object.assign([], makeRoad(0));
-    cubeOb = new CubeObject();
-    cubeOb.init([0, 0, -100]);
-    objects.push(cubeOb);
+    // cubeOb = new CubeObject();
+    //cubeOb.init([0, 0, -100]);
+    //objects.push(cubeOb);
     makeWall();
     gameLoop();
   };
@@ -58,8 +58,8 @@ function Game(canv) {
     //distance calculation
     var distarray = [];
     var counter = 0;
-    for (cube of objects) {
-      [x2, y2, z2] = cube.top;
+    for (ob of objects) {
+      [x2, y2, z2] = ob.top;
       xdis = Math.pow(x2 - x1, 2);
       ydis = Math.pow(y2 - y1, 2);
       zdis = Math.pow(z2 - z1, 2);
@@ -74,11 +74,7 @@ function Game(canv) {
     for (i of distarray) {
       newObjectArr.push(objects[i[1]]);
     }
-
     objects = Object.assign([], newObjectArr);
-    //change the object array based on distance array
-
-    //calculating the distance from camera
   }
 
   function setupCanvas(canv) {
@@ -160,36 +156,40 @@ function Game(canv) {
 
   function draw() {
     ctx.clearRect(0, 0, 2 * canvasWidth, 2 * canvasHeight);
-    for (var cubeObject of objects) {
-      cube = cubeObject.verti;
 
-      var vertexList = [];
-      var screen_coords = [];
+    for (ob of objects) {
+      cubes = ob.getCube();
+      for (var cubeObject of cubes) {
+        cube = cubeObject.verti;
 
-      for (var i of cube) {
-        var [q, w, e] = i;
-        [q, w, e] = TransformAndRotate(q, w, e);
-        vertexList.push([q, w, e]);
-        [q, w] = project(q, w, e);
-        screen_coords.push([q + dx, w + dy]);
-      }
+        var vertexList = [];
+        var screen_coords = [];
 
-      facesList = [];
-      var onscreen;
-
-      for (face of cubeObject.cubeFace) {
-        onscreen = false;
-        onscreen = checkCubeOnScreen(face, screen_coords, vertexList);
-        if (onscreen) {
-          var coords = [];
-          for (var i of face) {
-            coords.push(screen_coords[i]);
-          }
-          facesList.push(coords);
+        for (var i of cube) {
+          var [q, w, e] = i;
+          [q, w, e] = TransformAndRotate(q, w, e);
+          vertexList.push([q, w, e]);
+          [q, w] = project(q, w, e);
+          screen_coords.push([q + dx, w + dy]);
         }
-      }
 
-      drawCube(facesList, cubeObject.color, cubeObject.Type);
+        facesList = [];
+        var onscreen;
+
+        for (face of cubeObject.cubeFace) {
+          onscreen = false;
+          onscreen = checkCubeOnScreen(face, screen_coords, vertexList);
+          if (onscreen) {
+            var coords = [];
+            for (var i of face) {
+              coords.push(screen_coords[i]);
+            }
+            facesList.push(coords);
+          }
+        }
+
+        drawCube(facesList, cubeObject.color, cubeObject.Type);
+      }
     }
   }
 
@@ -197,15 +197,12 @@ function Game(canv) {
     for (vertex of map) {
       var wall = new Wall();
       wall.makeWall(vertex);
-      console.log(wall);
+      // console.log(wall);
       // Object.assign(objects, wall.getCube());
       // // objects.concat(wall.getCube());
       // //   objects = objects + wall.getCube();
       // console.log(objects.length);
-
-      for (i of wall.getCube()) {
-        objects.push(i);
-      }
+      objects.push(wall);
     }
   }
 
