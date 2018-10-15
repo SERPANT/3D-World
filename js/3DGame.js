@@ -36,7 +36,7 @@ function Game(canv) {
     cam = new camera();
     cam.init([0, -220, -250]);
 
-    objects = Object.assign([], makeRoad(0));
+    //objects = Object.assign([], makeRoad(0));
     cubeOb = new CubeObject();
     cubeOb.init([0, 0, -100]);
     objects.push(cubeOb);
@@ -160,7 +160,6 @@ function Game(canv) {
 
   function draw() {
     ctx.clearRect(0, 0, 2 * canvasWidth, 2 * canvasHeight);
-
     for (var cubeObject of objects) {
       cube = cubeObject.verti;
 
@@ -196,20 +195,16 @@ function Game(canv) {
 
   function makeWall() {
     for (vertex of map) {
-      var [x, y, z, wallW, wallH, color] = vertex;
-      // cubeOb = new CubeObject();
-      // cubeOb.init([x, y, z], color);
-      // objects.push(cubeOb);
-      for (var i = x; i < x + wallW; i = i + 20) {
-        for (var j = y; j < y + wallH; j = j + 20) {
-          cubeOb = new CubeObject();
-          cubeOb.init([i, -j, z], color);
-          objects.push(cubeOb);
+      var wall = new Wall();
+      wall.makeWall(vertex);
+      console.log(wall);
+      // Object.assign(objects, wall.getCube());
+      // // objects.concat(wall.getCube());
+      // //   objects = objects + wall.getCube();
+      // console.log(objects.length);
 
-          // cubeOb = new CubeObject();
-          // cubeOb.init([i, -j, z], color);
-          // objects.push(cubeOb);
-        }
+      for (i of wall.getCube()) {
+        objects.push(i);
       }
     }
   }

@@ -119,3 +119,23 @@ function draw() {
 
   requestAnimationFrame(draw);
 }
+
+function makeWall() {
+  for (vertex of map) {
+    var [x, y, z, wallW, wallH, color] = vertex;
+    // cubeOb = new CubeObject();
+    // cubeOb.init([x, y, z], color);
+    // objects.push(cubeOb);
+    for (var i = x; i < x + wallW; i = i + 20) {
+      for (var j = y; j < y + wallH; j = j + 20) {
+        cubeOb = new CubeObject();
+        cubeOb.init([i, -j, z], color);
+        objects.push(cubeOb);
+
+        // cubeOb = new CubeObject();
+        // cubeOb.init([i, -j, z], color);
+        // objects.push(cubeOb);
+      }
+    }
+  }
+}
