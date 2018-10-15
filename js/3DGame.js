@@ -12,7 +12,13 @@ function Game(canv) {
   var oldmousey = 0;
   var objects = [];
 
-  var map = [[]];
+  var map = [
+    [150, 0, 720, 50, 150, "pink"],
+    [-150, 0, 680, 200, 150, "red"],
+    [-150, 0, 520, 50, 150, "gold"],
+    [-150, 0, 320, 50, 60, "blue"],
+    [50, 0, 320, 50, 70, "green"]
+  ];
 
   var v = 10;
 
@@ -20,13 +26,14 @@ function Game(canv) {
     setupCanvas(canv);
 
     cam = new camera();
-    cam.init([0, -140, -70]);
+    cam.init([0, -220, -250]);
 
     objects = Object.assign([], makeRoad(0));
     cubeOb = new CubeObject();
     cubeOb.init([0, 0, -100]);
     objects.push(cubeOb);
-
+    makeWall();
+    console.log(objects.length);
     draw();
   };
 
@@ -78,7 +85,7 @@ function Game(canv) {
 
       // Close the path and draw the face
       ctx.closePath();
-      //ctx.stroke();
+      ctx.stroke();
       ctx.fillStyle = color;
       ctx.fill();
     }
@@ -89,10 +96,10 @@ function Game(canv) {
       [x, y] = screen_coords[vertex];
       if (
         vertexList[vertex][2] > -10 &&
-        x > -15 &&
-        x < cw + 20 &&
-        y > 0 &&
-        y < ch + 20 &&
+        x > -35 &&
+        x < cw + 35 &&
+        y > -35 &&
+        y < ch + 35 &&
         vertexList[vertex][2] < 900
       ) {
         onscreen = true;
@@ -142,37 +149,37 @@ function Game(canv) {
     requestAnimationFrame(draw);
   }
 
-  function makeWall(x, y, z) {
-    arr = [];
+  function makeWall() {
+    for (vertex of map) {
+      var [x, y, z, wallW, wallH, color] = vertex;
+      // cubeOb = new CubeObject();
+      // cubeOb.init([x, y, z], color);
+      // objects.push(cubeOb);
+      for (var i = x; i < x + wallW; i = i + 20) {
+        for (var j = y; j < y + wallH; j = j + 20) {
+          cubeOb = new CubeObject();
+          cubeOb.init([i, -j, z], color);
+          objects.push(cubeOb);
 
-    cubeOb = new CubeObject();
-    cubeOb.init([0, 0, z]);
-    arr.push(cubeOb);
-    for (var i = x; i < 50; i = i + 10) {
-      for (var j = y; j < 50; j = j + 2) {
-        cubeOb = new CubeObject();
-        cubeOb.init([-i, -j, z]);
-        arr.push(cubeOb);
-
-        cubeOb = new CubeObject();
-        cubeOb.init([i, -j, z]);
-        arr.push(cubeOb);
+          // cubeOb = new CubeObject();
+          // cubeOb.init([i, -j, z], color);
+          // objects.push(cubeOb);
+        }
       }
     }
-    return arr;
   }
 
   function makeRoad(y) {
     arr = [];
 
-    for (var j = 20; j < 250; j = j + 6) {
+    for (var j = 20; j < 300; j = j + 20) {
       cubeOb = new CubeObject();
       cubeOb.init([0, y, j], "white");
       arr.push(cubeOb);
     }
 
-    for (var i = 8; i < 150; i = i + 10) {
-      for (var j = 20; j < 250; j = j + 6) {
+    for (var i = 20; i < 200; i = i + 20) {
+      for (var j = 20; j < 300; j = j + 20) {
         cubeOb = new CubeObject();
         cubeOb.init([-i, y, j], "gray");
         arr.push(cubeOb);

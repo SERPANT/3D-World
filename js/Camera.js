@@ -14,7 +14,7 @@ var camera = function() {
   };
 
   this.update = function(key) {
-    var s = 5;
+    var s = 10;
 
     if (key === "KeyE") {
       this.positon[1] -= s;

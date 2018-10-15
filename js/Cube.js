@@ -1,5 +1,5 @@
 var CubeObject = function() {
-  var c = 5;
+  var c = 10;
   this.verti = [];
 
   var cube = [
@@ -24,7 +24,12 @@ var CubeObject = function() {
 
   this.color;
 
-  this.init = function(pos = [0, 0, 0], color = "red", size = 5) {
+  this.init = function(
+    pos = [0, 0, 0],
+    color = "red",
+    size = 5,
+    objectType = 0
+  ) {
     c = size;
     var [x, y, z] = pos;
 
