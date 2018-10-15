@@ -2,6 +2,7 @@ var CubeObject = function() {
   var c = 10;
   this.verti = [];
   this.Type;
+  this.top;
 
   var cube = [
     [-c, -c, -c],
@@ -29,11 +30,12 @@ var CubeObject = function() {
     pos = [0, 0, 0],
     color = "red",
     objectType = 0,
-    size = 5
+    size = 10
   ) {
     this.Type = objectType;
     c = size;
     var [x, y, z] = pos;
+    this.top = [x + cube[0][0], y + cube[0][1], z + cube[0][2]];
 
     for (i in cube) {
       var [X, Y, Z] = cube[i];

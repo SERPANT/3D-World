@@ -16,8 +16,8 @@ function Game(canv) {
     [150, 0, 720, 50, 150, "pink"],
     [-150, 0, 680, 200, 150, "red"],
     [-150, 0, 520, 50, 150, "gold"],
-    [-150, 0, 320, 50, 60, "blue"],
-    [50, 0, 320, 50, 70, "green"]
+    [-150, 0, 320, 50, 40, "blue"],
+    [50, 20, 220, 50, 40, "green"]
   ];
 
   // var map = [
@@ -45,8 +45,40 @@ function Game(canv) {
   };
 
   function gameLoop() {
+    update();
     draw();
     requestAnimationFrame(gameLoop);
+  }
+
+  function update() {
+    //sorting the cube
+
+    var [x1, y1, z1] = cam.positon;
+
+    //distance calculation
+    var distarray = [];
+    var counter = 0;
+    for (cube of objects) {
+      [x2, y2, z2] = cube.top;
+      xdis = Math.pow(x2 - x1, 2);
+      ydis = Math.pow(y2 - y1, 2);
+      zdis = Math.pow(z2 - z1, 2);
+      dist = Math.pow(xdis + ydis + zdis, 1 / 2);
+      distarray.push([dist, counter]);
+      counter++;
+    }
+    distarray.sort();
+    distarray.reverse();
+    var newObjectArr = [];
+
+    for (i of distarray) {
+      newObjectArr.push(objects[i[1]]);
+    }
+
+    objects = Object.assign([], newObjectArr);
+    //change the object array based on distance array
+
+    //calculating the distance from camera
   }
 
   function setupCanvas(canv) {
