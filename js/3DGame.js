@@ -61,20 +61,25 @@ function Game(canv) {
     // cubeOb = new CubeObject();
     //cubeOb.init([0, 0, -100]);
     //objects.push(cubeOb);
-    //  makeRoad();
-    makeWall();
+    makeObjects();
     gameLoop();
   };
+
+  function makeObjects() {
+    makeRoad();
+    makeWall();
+  }
 
   function makeRoad() {
     var road = new Road();
     road.makeRoad(cw / 2);
     objects.push(road);
   }
+
   function gameLoop() {
     update();
     ctx.clearRect(0, 0, 2 * canvasWidth, 2 * canvasHeight);
-    drawGround();
+    //drawGround();
     draw();
 
     requestAnimationFrame(gameLoop);
