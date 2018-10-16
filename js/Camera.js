@@ -14,7 +14,7 @@ var camera = function() {
   };
 
   this.update = function(key) {
-    var s = 10;
+    var s = 15;
 
     if (key === "KeyE") {
       this.positon[1] -= s;
@@ -46,6 +46,10 @@ var camera = function() {
       this.positon[2] -= x;
     }
 
+    if (key === "KeyC") {
+      this.rotation[0] += 1 / 500;
+    }
+
     // if(key==="KeyW") {  this.positon[2]+=s; }
     // if(key==="KeyS") {  this.positon[2]-=s; }
     // if(key==="KeyA") { this.positon[0]-=s; }
@@ -61,7 +65,9 @@ var camera = function() {
       x /= 1000;
       y /= 1000;
 
-      this.rotation[0] += y; //rotation arround x axis
+      //      this.rotation[0] += y; //rotation arround x axis
+
+      this.rotation[0] = (this.rotation[0] + y) % 2;
       this.rotation[1] += x; //rotation arround y axis
     }
   };

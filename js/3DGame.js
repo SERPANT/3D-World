@@ -11,22 +11,43 @@ function Game(canv) {
   var oldmousex = 0;
   var oldmousey = 0;
   var objects = [];
-
-  var map = [
-    [150, 0, 720, 50, 150, "pink"],
-    [-150, 0, 680, 200, 150, "red"],
-    [-150, 0, 520, 50, 150, "gold"],
-    [-150, 0, 320, 50, 40, "blue"],
-    [50, 20, 220, 50, 40, "green"]
-  ];
+  var limitRendering = 70;
 
   // var map = [
-  //   [150, 0, 720, 50, 150, "gold"],
-  //   [-150, 0, 680, 200, 150, "gold"],
-  //   [-150, 0, 520, 50, 150, "gold"],
-  //   [-150, 0, 320, 50, 60, "gold"],
-  //   [50, 0, 320, 50, 70, "gold"]
+  //   [150, 0, 720, 50, 150, 0, "pink"],
+  //   [-150, 0, 680, 200, 150, 0, "red"],
+  //   [-150, 0, 520, 50, 150, 0, "gold"],
+  //   [-150, 0, 320, 50, 40, 0, "blue"],
+  //   [50, 20, 220, 50, 40, 0, "green"],
+  //   [150, 0, 720, 50, 150, 0, "pink"],
+  //   [-600, 0, 135, 200, 150, 30, "red"],
+  //   [-150, 0, 520, 50, 150, 80, "gold"],
+  //   [-150, 0, 320, 50, 40, 10, "blue"],
+  //   [50, 20, 220, 50, 40, 15, "green"]
   // ];
+
+  // var map = [
+  //   [150, 0, 720, 50, 150, 0, "red"],
+  //   [-150, 0, 680, 200, 150, 0, "red"],
+  //   [-150, 0, 520, 50, 150, 0, "red"],
+  //   [-150, 0, 320, 50, 40, 0, "red"],
+  //   [50, 20, 220, 50, 40, 0, "red"],
+  //   [150, 0, 720, 50, 150, 0, "red"],
+  //   [-600, 0, 135, 200, 150, 30, "red"],
+  //   [-150, 0, 520, 50, 150, 80, "red"],
+  //   [-150, 0, 320, 50, 40, 10, "red"],
+  //   [50, 20, 220, 50, 40, 15, "red"]
+  // ];
+
+  //210
+  var map = [
+    [-600, 0, 465, 200, 150, 30, "red"],
+    [150, 0, 680, 200, 150, 0, "red"],
+    [-60, 0, 680, 200, 150, 0, "red"],
+    [-280, 0, 680, 200, 150, 0, "red"],
+    [-490, 0, 680, 200, 150, 0, "red"],
+    [-670, 0, 680, 200, 150, 0, "red"]
+  ];
 
   var v = 10;
 
@@ -40,41 +61,58 @@ function Game(canv) {
     // cubeOb = new CubeObject();
     //cubeOb.init([0, 0, -100]);
     //objects.push(cubeOb);
+    //  makeRoad();
     makeWall();
     gameLoop();
   };
 
+  function makeRoad() {
+    var road = new Road();
+    road.makeRoad(cw / 2);
+    objects.push(road);
+  }
   function gameLoop() {
     update();
+    ctx.clearRect(0, 0, 2 * canvasWidth, 2 * canvasHeight);
+    drawGround();
     draw();
+
     requestAnimationFrame(gameLoop);
+    //setInterval(gameLoop, 1000 / 60);
   }
 
   function update() {
     //sorting the cube
-
     var [x1, y1, z1] = cam.positon;
-
     //distance calculation
     var distarray = [];
     var counter = 0;
     for (ob of objects) {
-      [x2, y2, z2] = ob.top;
-      xdis = Math.pow(x2 - x1, 2);
-      ydis = Math.pow(y2 - y1, 2);
-      zdis = Math.pow(z2 - z1, 2);
-      dist = Math.pow(xdis + ydis + zdis, 1 / 2);
+      var [x2, y2, z2] = ob.top;
+      var xdis = Math.pow(x2 - x1, 2);
+      var ydis = Math.pow(y2 - y1, 2);
+      var zdis = Math.pow(z2 - z1, 2);
+      var dist = Math.pow(xdis + ydis + zdis, 1 / 2);
       distarray.push([dist, counter]);
       counter++;
     }
-    distarray.sort();
+    distarray.sort(sortFunction);
     distarray.reverse();
     var newObjectArr = [];
 
+    //console.log(distarray);
     for (i of distarray) {
       newObjectArr.push(objects[i[1]]);
     }
     objects = Object.assign([], newObjectArr);
+  }
+
+  function sortFunction(a, b) {
+    if (a[0] === b[0]) {
+      return 0;
+    } else {
+      return a[0] < b[0] ? -1 : 1;
+    }
   }
 
   function setupCanvas(canv) {
@@ -86,9 +124,9 @@ function Game(canv) {
 
   //adding camera
   function rotate2D(pos, rad) {
-    [x, y] = pos;
-    s = Math.sin(rad);
-    c = Math.cos(rad);
+    var [x, y] = pos;
+    var s = Math.sin(rad);
+    var c = Math.cos(rad);
     return [x * c - y * s, y * c + x * s];
   }
 
@@ -100,6 +138,10 @@ function Game(canv) {
     [v, d] = rotate2D([q, e], cam.rotation[1]);
     q = v;
     e = d;
+
+    // [v, d] = rotate2D([w, e], cam.rotation[0]);
+    // w = v;
+    // e = d;
 
     return [q, w, e];
   }
@@ -135,14 +177,14 @@ function Game(canv) {
 
   function checkCubeOnScreen(face, screen_coords, vertexList) {
     for (vertex of face) {
-      [x, y] = screen_coords[vertex];
+      var [x, y] = screen_coords[vertex];
       if (
         vertexList[vertex][2] > -10 &&
-        x > -35 &&
-        x < cw + 35 &&
-        y > -35 &&
-        y < ch + 35 &&
-        vertexList[vertex][2] < 900
+        x > -limitRendering &&
+        x < cw + limitRendering &&
+        y > -limitRendering &&
+        y < ch + limitRendering &&
+        vertexList[vertex][2] < 2000
       ) {
         onscreen = true;
       } else {
@@ -155,8 +197,6 @@ function Game(canv) {
   }
 
   function draw() {
-    ctx.clearRect(0, 0, 2 * canvasWidth, 2 * canvasHeight);
-
     for (ob of objects) {
       cubes = ob.getCube();
       for (var cubeObject of cubes) {
@@ -206,27 +246,19 @@ function Game(canv) {
     }
   }
 
-  function makeRoad(y) {
-    arr = [];
+  function drawGround() {
+    var ground = [[0, 500], [0, 1000], [1000, 1000], [1000, 500]];
+    ctx.beginPath();
+    ctx.moveTo(ground[0][0], ground[0][1]);
 
-    for (var j = 20; j < 300; j = j + 20) {
-      cubeOb = new CubeObject();
-      cubeOb.init([0, y, j], "white", 1);
-      arr.push(cubeOb);
+    for (var i = 1; i < ground.length; i++) {
+      ctx.lineTo(ground[i][0], ground[i][1]);
     }
 
-    for (var i = 20; i < 200; i = i + 20) {
-      for (var j = 20; j < 300; j = j + 20) {
-        cubeOb = new CubeObject();
-        cubeOb.init([-i, y, j], "gray", 1);
-        arr.push(cubeOb);
-
-        cubeOb = new CubeObject();
-        cubeOb.init([i, y, j], "gray", 1);
-        arr.push(cubeOb);
-      }
-    }
-    return arr;
+    ctx.closePath();
+    ctx.fillStyle = "green";
+    ctx.fill();
+    ctx.stroke();
   }
 
   function move(event) {
