@@ -3,16 +3,18 @@ var CubeObject = function() {
   this.verti = [];
   this.Type;
 
-  var cube = [
-    [-c, -c, -c],
-    [c, -c, -c],
-    [c, c, -c],
-    [-c, c, -c],
-    [-c, -c, c],
-    [c, -c, c],
-    [c, c, c],
-    [-c, c, c]
-  ];
+  // var cube = [
+  //   [-c, -c, -c],
+  //   [c, -c, -c],
+  //   [c, c, -c],
+  //   [-c, c, -c],
+  //   [-c, -c, c],
+  //   [c, -c, c],
+  //   [c, c, c],
+  //   [-c, c, c]
+  // ];
+
+  var cube = [];
 
   this.cubeFace = [
     [0, 1, 2, 3],
@@ -34,6 +36,18 @@ var CubeObject = function() {
   ) {
     this.Type = objectType;
     c = size;
+
+    cube = [
+      [-c, -c, -c],
+      [c, -c, -c],
+      [c, c, -c],
+      [-c, c, -c],
+      [-c, -c, c],
+      [c, -c, c],
+      [c, c, c],
+      [-c, c, c]
+    ];
+
     var [x, y, z] = pos;
 
     for (i in cube) {
@@ -49,20 +63,20 @@ var CubeObject = function() {
     this.color = color;
   };
 
-  this.selfRotate = function(center, theta = 360) {
-    for (point in cube) {
-      var [x, y, z] = cube[point];
+  // this.selfRotate = function(center, theta = 360) {
+  //   for (point in cube) {
+  //     var [x, y, z] = cube[point];
 
-      x = x;
-      y = y + center[1];
-      z = z + center[2];
+  //     x = x;
+  //     y = y + center[1];
+  //     z = z + center[2];
 
-      var s = x;
-      var d = Math.cos(theta) * y - Math.sin(theta) * z - center[1];
-      var f = Math.sin(theta) * y + Math.cos(theta) * z - center[2];
+  //     var s = x;
+  //     var d = Math.cos(theta) * y - Math.sin(theta) * z - center[1];
+  //     var f = Math.sin(theta) * y + Math.cos(theta) * z - center[2];
 
-      cube[point] = [s, d, f];
-    }
-    // console.log(cube);
-  };
+  //     cube[point] = [s, d, f];
+  //   }
+  //   // console.log(cube);
+  // };
 };

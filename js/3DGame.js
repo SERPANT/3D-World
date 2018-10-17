@@ -11,7 +11,7 @@ function Game(canv) {
   var oldmousex = 0;
   var oldmousey = 0;
   var objects = [];
-  var limitRendering = 70;
+  var limitRendering = 400;
 
   // var map = [
   //   [150, 0, 720, 50, 150, 0, "pink"],
@@ -39,15 +39,20 @@ function Game(canv) {
   //   [50, 20, 220, 50, 40, 15, "red"]
   // ];
 
-  //210
   var map = [
     [-600, 0, 465, 200, 150, 30, "red"],
-    [150, 0, 680, 200, 150, 0, "red"],
-    [-60, 0, 680, 200, 150, 0, "red"],
-    [-280, 0, 680, 200, 150, 0, "red"],
-    [-490, 0, 680, 200, 150, 0, "red"],
-    [-670, 0, 680, 200, 150, 0, "red"]
+    [150, 0, 890, 200, 150, 0, "red"],
+    [-60, 0, 890, 200, 150, 0, "red"],
+    [-60, 0, 790, 200, 150, 0, "purple"],
+    [-280, 0, 890, 200, 150, 0, "red"],
+    [-490, 0, 890, 200, 150, 0, "red"],
+    [-670, 0, 890, 200, 150, 0, "red"]
   ];
+
+  // var map = [
+  //   [-600, 0, 465, 200, 150, 30, "red"],
+  //   [150, 0, 890, 200, 150, 0, "red"]
+  // ];
 
   var v = 10;
 
@@ -66,8 +71,15 @@ function Game(canv) {
   };
 
   function makeObjects() {
-    makeRoad();
+    //makeRoad();
     makeWall();
+    //makeBuilding();
+  }
+
+  function makeBuilding() {
+    var building = new SplitBuilding();
+    building.makeBuilding();
+    objects.push(building);
   }
 
   function makeRoad() {
@@ -78,15 +90,22 @@ function Game(canv) {
 
   function gameLoop() {
     update();
-    ctx.clearRect(0, 0, 2 * canvasWidth, 2 * canvasHeight);
-    //drawGround();
     draw();
 
     requestAnimationFrame(gameLoop);
-    //setInterval(gameLoop, 1000 / 60);
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, 2 * canvasWidth, 2 * canvasHeight);
+    drawGround();
+    drawObjects();
   }
 
   function update() {
+    updateObjectPosition();
+  }
+
+  function updateObjectPosition() {
     //sorting the cube
     var [x1, y1, z1] = cam.positon;
     //distance calculation
@@ -97,7 +116,8 @@ function Game(canv) {
       var xdis = Math.pow(x2 - x1, 2);
       var ydis = Math.pow(y2 - y1, 2);
       var zdis = Math.pow(z2 - z1, 2);
-      var dist = Math.pow(xdis + ydis + zdis, 1 / 2);
+      var dist = xdis + ydis + zdis;
+
       distarray.push([dist, counter]);
       counter++;
     }
@@ -136,6 +156,7 @@ function Game(canv) {
   }
 
   function TransformAndRotate(q, w, e) {
+    //finding the position of the point with respective to  the camera as the origin
     q -= cam.positon[0];
     w -= cam.positon[1];
     e -= cam.positon[2];
@@ -184,7 +205,7 @@ function Game(canv) {
     for (vertex of face) {
       var [x, y] = screen_coords[vertex];
       if (
-        vertexList[vertex][2] > -10 &&
+        vertexList[vertex][2] > -100 &&
         x > -limitRendering &&
         x < cw + limitRendering &&
         y > -limitRendering &&
@@ -201,7 +222,7 @@ function Game(canv) {
     return onscreen;
   }
 
-  function draw() {
+  function drawObjects() {
     for (ob of objects) {
       cubes = ob.getCube();
       for (var cubeObject of cubes) {
@@ -284,7 +305,12 @@ function Game(canv) {
     cam.mousedown = false;
   }
 
+  function reset() {
+    cam.resetSpeed();
+  }
+
   document.addEventListener("keydown", move);
+  document.addEventListener("keyup", reset);
   document.addEventListener("mousedown", mousedown);
   document.addEventListener("mousemove", mouse);
   document.addEventListener("mouseup", mouseup);
