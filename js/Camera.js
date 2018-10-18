@@ -4,7 +4,7 @@ var camera = function() {
   //assuming any forward and backward movement is z axis movement
 
   this.mousedown = false;
-  this.s = 20;
+  this.s = 10;
   var diveRef;
   var standupRef;
   this.directionMovement = [0, 0, 1];

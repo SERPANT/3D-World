@@ -2,17 +2,7 @@ var CubeObject = function() {
   var c = 10;
   this.verti = [];
   this.Type;
-
-  // var cube = [
-  //   [-c, -c, -c],
-  //   [c, -c, -c],
-  //   [c, c, -c],
-  //   [-c, c, -c],
-  //   [-c, -c, c],
-  //   [c, -c, c],
-  //   [c, c, c],
-  //   [-c, c, c]
-  // ];
+  this.temp = [];
 
   var cube = [];
 
@@ -48,35 +38,21 @@ var CubeObject = function() {
       [-c, c, c]
     ];
 
-    var [x, y, z] = pos;
+    var [s, d, f] = rotateSelf(theta, pos);
 
     for (i in cube) {
       var [X, Y, Z] = cube[i];
-
-      var s = Math.cos(theta) * x - Math.sin(theta) * z;
-      var d = y;
-      var f = Math.sin(theta) * x + Math.cos(theta) * z;
-
-      //  this.verti.push([x + X, y + Y, z + Z]);
       this.verti.push([s + X, d + Y, f + Z]);
     }
     this.color = color;
   };
 
-  // this.selfRotate = function(center, theta = 360) {
-  //   for (point in cube) {
-  //     var [x, y, z] = cube[point];
+  function rotateSelf(theta, position) {
+    var [x, y, z] = position;
+    var s = Math.cos(theta) * x - Math.sin(theta) * z;
+    var d = y;
+    var f = Math.sin(theta) * x + Math.cos(theta) * z;
 
-  //     x = x;
-  //     y = y + center[1];
-  //     z = z + center[2];
-
-  //     var s = x;
-  //     var d = Math.cos(theta) * y - Math.sin(theta) * z - center[1];
-  //     var f = Math.sin(theta) * y + Math.cos(theta) * z - center[2];
-
-  //     cube[point] = [s, d, f];
-  //   }
-  //   // console.log(cube);
-  // };
+    return [s, d, f];
+  }
 };

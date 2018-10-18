@@ -13,46 +13,19 @@ function Game(canv) {
   var objects = [];
   var limitRendering = 400;
 
-  // var map = [
-  //   [150, 0, 720, 50, 150, 0, "pink"],
-  //   [-150, 0, 680, 200, 150, 0, "red"],
-  //   [-150, 0, 520, 50, 150, 0, "gold"],
-  //   [-150, 0, 320, 50, 40, 0, "blue"],
-  //   [50, 20, 220, 50, 40, 0, "green"],
-  //   [150, 0, 720, 50, 150, 0, "pink"],
-  //   [-600, 0, 135, 200, 150, 30, "red"],
-  //   [-150, 0, 520, 50, 150, 80, "gold"],
-  //   [-150, 0, 320, 50, 40, 10, "blue"],
-  //   [50, 20, 220, 50, 40, 15, "green"]
-  // ];
-
-  // var map = [
-  //   [150, 0, 720, 50, 150, 0, "red"],
-  //   [-150, 0, 680, 200, 150, 0, "red"],
-  //   [-150, 0, 520, 50, 150, 0, "red"],
-  //   [-150, 0, 320, 50, 40, 0, "red"],
-  //   [50, 20, 220, 50, 40, 0, "red"],
-  //   [150, 0, 720, 50, 150, 0, "red"],
-  //   [-600, 0, 135, 200, 150, 30, "red"],
-  //   [-150, 0, 520, 50, 150, 80, "red"],
-  //   [-150, 0, 320, 50, 40, 10, "red"],
-  //   [50, 20, 220, 50, 40, 15, "red"]
-  // ];
-
   var map = [
     [-600, 0, 465, 200, 150, 30, "red"],
+    [-600, 0, -400, 200, 150, 30, "gold"],
     [150, 0, 890, 200, 150, 0, "red"],
     [-60, 0, 890, 200, 150, 0, "red"],
-    [-60, 0, 790, 200, 150, 0, "purple"],
+    [-670, 0, 1290, 200, 150, 0, "purple"],
+    [-490, 0, 1290, 200, 150, 0, "purple"],
+    [-280, 0, 1290, 200, 150, 0, "purple"],
+    [-60, 0, 1290, 200, 150, 0, "purple"],
     [-280, 0, 890, 200, 150, 0, "red"],
     [-490, 0, 890, 200, 150, 0, "red"],
     [-670, 0, 890, 200, 150, 0, "red"]
   ];
-
-  // var map = [
-  //   [-600, 0, 465, 200, 150, 30, "red"],
-  //   [150, 0, 890, 200, 150, 0, "red"]
-  // ];
 
   var v = 10;
 
@@ -61,11 +34,6 @@ function Game(canv) {
 
     cam = new camera();
     cam.init([0, -220, -250]);
-
-    //objects = Object.assign([], makeRoad(0));
-    // cubeOb = new CubeObject();
-    //cubeOb.init([0, 0, -100]);
-    //objects.push(cubeOb);
     makeObjects();
     gameLoop();
   };
@@ -125,7 +93,6 @@ function Game(canv) {
     distarray.reverse();
     var newObjectArr = [];
 
-    //console.log(distarray);
     for (i of distarray) {
       newObjectArr.push(objects[i[1]]);
     }
@@ -263,11 +230,7 @@ function Game(canv) {
     for (vertex of map) {
       var wall = new Wall();
       wall.makeWall(vertex);
-      // console.log(wall);
-      // Object.assign(objects, wall.getCube());
-      // // objects.concat(wall.getCube());
-      // //   objects = objects + wall.getCube();
-      // console.log(objects.length);
+
       objects.push(wall);
     }
   }
