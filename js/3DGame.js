@@ -13,34 +13,49 @@ function Game(canv) {
   var objects = [];
   var limitRendering = 400;
 
-  var map = [
-    [-600, 0, 465, 200, 150, 30, "red"],
-    [-600, 0, -400, 200, 150, 30, "gold"],
-    [150, 0, 890, 200, 150, 0, "red"],
-    [-60, 0, 890, 200, 150, 0, "red"],
-    [-670, 0, 1290, 200, 150, 0, "purple"],
-    [-490, 0, 1290, 200, 150, 0, "purple"],
-    [-280, 0, 1290, 200, 150, 0, "purple"],
-    [-60, 0, 1290, 200, 150, 0, "purple"],
-    [-280, 0, 890, 200, 150, 0, "red"],
-    [-490, 0, 890, 200, 150, 0, "red"],
-    [-670, 0, 890, 200, 150, 0, "red"]
+  // var map = [
+  //   [-600, 0, 465, 200, 150, 30, "red"],
+  //   [-600, 0, -400, 200, 150, 30, "gold"],
+  //   [150, 0, 890, 200, 150, 0, "red"],
+  //   [-60, 0, 890, 200, 150, 0, "red"],
+  //   [-670, 0, 1290, 200, 150, 0, "purple"],
+  //   [-490, 0, 1290, 200, 150, 0, "purple"],
+  //   [-280, 0, 1290, 200, 150, 0, "purple"],
+  //   [-60, 0, 1290, 200, 150, 0, "purple"],
+  //   [-280, 0, 890, 200, 150, 0, "red"],
+  //   [-490, 0, 890, 200, 150, 0, "red"],
+  //   [-670, 0, 890, 200, 150, 0, "red"]
+  // ];
+
+  var gameMap = [
+    [1, 1, 1, 1, 1, 0, 1],
+    [-1, 0, 0, 0, 0, 0, -1],
+    [1, 0, 1, 1, 1, 1, 1],
+    [-1, 0, 0, 0, 0, 0, -1],
+    [1, 1, 1, 1, 1, 0, 1],
+    [-1, 0, 0, 0, 0, 0, -1],
+    [1, 0, 1, 1, 1, 1, 1]
   ];
 
+  var a = new CubeObject();
+  a.init([100, -250, 0]);
+
+  var colorType = ["red", "gold", "blue", "purple", "green", "pink"];
   var v = 10;
 
   this.init = function(canv) {
     setupCanvas(canv);
 
     cam = new camera();
-    cam.init([0, -220, -250]);
-    makeObjects();
+    cam.init([100, -220, -250]);
+    //  makeObjects();
     gameLoop();
   };
 
   function makeObjects() {
     //makeRoad();
-    makeWall();
+    // makeWall();
+    makeMaze();
     //makeBuilding();
   }
 
@@ -67,6 +82,7 @@ function Game(canv) {
     ctx.clearRect(0, 0, 2 * canvasWidth, 2 * canvasHeight);
     drawGround();
     drawObjects();
+    drawTest();
   }
 
   function update() {
@@ -146,25 +162,56 @@ function Game(canv) {
     return [q, w];
   }
 
-  function drawCube(facesList, color, type) {
+  // function drawCube(facesList, color, type) {
+  //   for (j in facesList) {
+  //     //calculate direction of camera
+  //     //compare direction of camera and the direction of the cube faces
+  //     var face = facesList[j];
+  //     ctx.beginPath();
+
+  //     ctx.moveTo(face[0][0], face[0][1]);
+
+  //     // Draw the vector2 vertices
+  //     for (var k = 1, n_vertices = face.length; k < n_vertices; ++k) {
+  //       ctx.lineTo(face[k][0], face[k][1]);
+  //     }
+
+  //     // Close the path and draw the face
+  //     ctx.closePath();
+  //     if (type === 0) {
+  //       ctx.stroke();
+  //     }
+  //     ctx.fillStyle = colorType[j];
+  //     ctx.fill();
+  //   }
+  // }
+
+  function drawCube(facesList, color, type, camDirection = 0, direction) {
     for (j in facesList) {
-      var face = facesList[j];
-      ctx.beginPath();
+      //calculate direction of camera
+      //compare direction of camera and the direction of the cube faces
+      let faceDirection = direction[j];
+      console.log(j, faceDirection);
 
-      ctx.moveTo(face[0][0], face[0][1]);
+      if (faceDirection[2] < 0) {
+        var face = facesList[j];
+        ctx.beginPath();
 
-      // Draw the other vertices
-      for (var k = 1, n_vertices = face.length; k < n_vertices; ++k) {
-        ctx.lineTo(face[k][0], face[k][1]);
+        ctx.moveTo(face[0][0], face[0][1]);
+
+        // Draw the vector2 vertices
+        for (var k = 1, n_vertices = face.length; k < n_vertices; ++k) {
+          ctx.lineTo(face[k][0], face[k][1]);
+        }
+
+        // Close the path and draw the face
+        ctx.closePath();
+        if (type === 0) {
+          ctx.stroke();
+        }
+        ctx.fillStyle = colorType[j];
+        ctx.fill();
       }
-
-      // Close the path and draw the face
-      ctx.closePath();
-      if (type === 0) {
-        ctx.stroke();
-      }
-      ctx.fillStyle = color;
-      ctx.fill();
     }
   }
 
@@ -176,8 +223,8 @@ function Game(canv) {
         x > -limitRendering &&
         x < cw + limitRendering &&
         y > -limitRendering &&
-        y < ch + limitRendering &&
-        vertexList[vertex][2] < 2000
+        y < ch + limitRendering //&&
+        //  vertexList[vertex][2] < 2000
       ) {
         onscreen = true;
       } else {
@@ -189,11 +236,24 @@ function Game(canv) {
     return onscreen;
   }
 
+  function calculateDirection(face, vertexList) {
+    let vertex0 = vertexList[face[0]];
+    let vertex1 = vertexList[face[1]];
+    let vertex2 = vertexList[face[2]];
+    let vertex3 = vertexList[face[3]];
+    // console.log(vertex1, vertex2, vertex3, vertex4);
+
+    let side1 = subtract(vertex2, vertex3);
+    let side2 = subtract(vertex0, vertex3);
+    var oriantationVector = cross(side1, side2);
+    return oriantationVector;
+  }
+
   function drawObjects() {
     for (ob of objects) {
       cubes = ob.getCube();
       for (var cubeObject of cubes) {
-        cube = cubeObject.verti;
+        let cube = cubeObject.verti;
 
         var vertexList = [];
         var screen_coords = [];
@@ -206,8 +266,9 @@ function Game(canv) {
           screen_coords.push([q + dx, w + dy]);
         }
 
-        facesList = [];
-        var onscreen;
+        let facesList = [];
+        let direction = [];
+        let onscreen;
 
         for (face of cubeObject.cubeFace) {
           onscreen = false;
@@ -226,13 +287,90 @@ function Game(canv) {
     }
   }
 
-  function makeWall() {
-    for (vertex of map) {
-      var wall = new Wall();
-      wall.makeWall(vertex);
+  // function drawTest() {
+  //   let cube = a.verti;
 
-      objects.push(wall);
+  //   let vertexList = [];
+  //   let screen_coords = [];
+
+  //   for (var i of cube) {
+  //     var [q, w, e] = i;
+  //     [q, w, e] = TransformAndRotate(q, w, e);
+  //     vertexList.push([q, w, e]);
+  //     [q, w] = project(q, w, e);
+  //     screen_coords.push([q + dx, w + dy, e]);
+  //   }
+
+  //   facesList = [];
+  //   let direction = [];
+  //   let onscreen;
+
+  //   for (face of a.cubeFace) {
+  //     onscreen = false;
+  //     onscreen = checkCubeOnScreen(face, screen_coords, vertexList);
+  //     direction.push(calculateDirection(face, screen_coords));
+  //     if (onscreen) {
+  //       var coords = [];
+  //       for (var i of face) {
+  //         coords.push(screen_coords[i]);
+  //       }
+  //       facesList.push(coords);
+  //     }
+  //   }
+
+  //   let camDirection = directionOfCamera();
+  //   //   console.log(camDirection);
+  //   drawCube(facesList, a.color, a.Type, camDirection, direction);
+  // }
+
+  function directionOfCamera() {
+    let camDirection = subtract(a.position, cam.positon);
+    return camDirection;
+  }
+
+  // function makeWall() {
+  //   for (vertex of map) {
+  //     var wall = new Wall();
+  //     wall.makeWall(vertex);
+
+  //     objects.push(wall);
+  //   }
+
+  function makeMaze() {
+    for (let row in gameMap) {
+      let mapRow = gameMap[row];
+      for (let col in mapRow) {
+        if (mapRow[col] === 1) {
+          let detail = [
+            col * 220 - 670,
+            0,
+            row * 300 + 700,
+            200,
+            400,
+            0,
+            "gray"
+          ];
+          makeWall(detail);
+        } else if (mapRow[col] === -1) {
+          let detail = [
+            row * 220 - 900,
+            0,
+            col * 220 - 500,
+            380,
+            200,
+            30,
+            "gray"
+          ];
+          makeWall(detail);
+        }
+      }
     }
+  }
+
+  function makeWall(detail) {
+    var wall = new Wall();
+    wall.makeWall(detail);
+    objects.push(wall);
   }
 
   function drawGround() {

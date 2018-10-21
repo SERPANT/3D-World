@@ -5,10 +5,10 @@ var Wall = function() {
   this.makeWall = function(detail) {
     var [x, y, z, wallW, wallH, angle, color] = detail;
 
-    for (var i = x; i < x + wallW; i = i + 20) {
-      for (var j = y; j < y + wallH; j = j + 20) {
+    for (var i = x; i < x + wallW; i = i + 55) {
+      for (var j = y; j < y + wallH; j = j + 55) {
         cubeOb = new CubeObject();
-        cubeOb.init([i, -j, z], color, angle);
+        cubeOb.init([i, -j, z], color, angle, 0, 30);
         this.CubeArray.push(cubeOb);
       }
     }
