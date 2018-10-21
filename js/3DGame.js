@@ -40,7 +40,7 @@ function Game(canv) {
   var a = new CubeObject();
   a.init([100, -250, 0]);
 
-  var colorType = ["red", "gold", "blue", "purple", "green", "pink"];
+  var colorType = ["gray", "gold", "blue", "purple", "brown", "pink"];
   var v = 10;
 
   this.init = function(canv) {
@@ -48,7 +48,7 @@ function Game(canv) {
 
     cam = new camera();
     cam.init([100, -220, -250]);
-    //  makeObjects();
+    makeObjects();
     gameLoop();
   };
 
@@ -82,7 +82,7 @@ function Game(canv) {
     ctx.clearRect(0, 0, 2 * canvasWidth, 2 * canvasHeight);
     drawGround();
     drawObjects();
-    drawTest();
+    //drawTest();
   }
 
   function update() {
@@ -187,11 +187,12 @@ function Game(canv) {
   // }
 
   function drawCube(facesList, color, type, camDirection = 0, direction) {
+    direction[3][2] = 100;
     for (j in facesList) {
       //calculate direction of camera
       //compare direction of camera and the direction of the cube faces
       let faceDirection = direction[j];
-      console.log(j, faceDirection);
+      //  console.log(j, faceDirection);
 
       if (faceDirection[2] < 0) {
         var face = facesList[j];
@@ -273,6 +274,7 @@ function Game(canv) {
         for (face of cubeObject.cubeFace) {
           onscreen = false;
           onscreen = checkCubeOnScreen(face, screen_coords, vertexList);
+          direction.push(calculateDirection(face, screen_coords));
           if (onscreen) {
             var coords = [];
             for (var i of face) {
@@ -281,8 +283,9 @@ function Game(canv) {
             facesList.push(coords);
           }
         }
-
-        drawCube(facesList, cubeObject.color, cubeObject.Type);
+        let camDirection = directionOfCamera();
+        //drawCube(facesList, cubeObject.color, cubeObject.Type);
+        drawCube(facesList, a.color, a.Type, camDirection, direction);
       }
     }
   }
