@@ -2,7 +2,6 @@ var CubeObject = function() {
   var c = 10;
   this.verti = [];
   this.Type;
-  this.temp = [];
   this.position;
   var cube = [];
   var front = 1;
@@ -32,14 +31,14 @@ var CubeObject = function() {
     c = size;
 
     cube = [
-      [-c, -c, -c],
-      [c, -c, -c],
-      [c, c, -c],
-      [-c, c, -c],
-      [-c, -c, c],
-      [c, -c, c],
-      [c, c, c],
-      [-c, c, c]
+      [-c, -c, -c], //top left front
+      [c, -c, -c], //top right front
+      [c, c, -c], //bottom right front
+      [-c, c, -c], //bottom left front
+      [-c, -c, c], //top left back
+      [c, -c, c], //top right back
+      [c, c, c], //bottom right back
+      [-c, c, c] //bottom left back
     ];
 
     var [s, d, f] = rotateSelf(theta, pos);
@@ -48,8 +47,8 @@ var CubeObject = function() {
       var [X, Y, Z] = cube[i];
       this.verti.push([s + X, d + Y, f + Z]);
     }
+
     this.color = color;
-    var [a, b, t, k, e, l] = this.cubeFace;
     //console.log(a, b, t, k, e, l);
     this.cubeFace = makeFace(this.cubeFace);
     //console.log(this.cubeFace);

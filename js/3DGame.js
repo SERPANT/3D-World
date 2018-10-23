@@ -13,20 +13,6 @@ function Game(canv) {
   var objects = [];
   var limitRendering = 400;
 
-  // var map = [
-  //   [-600, 0, 465, 200, 150, 30, "red"],
-  //   [-600, 0, -400, 200, 150, 30, "gold"],
-  //   [150, 0, 890, 200, 150, 0, "red"],
-  //   [-60, 0, 890, 200, 150, 0, "red"],
-  //   [-670, 0, 1290, 200, 150, 0, "purple"],
-  //   [-490, 0, 1290, 200, 150, 0, "purple"],
-  //   [-280, 0, 1290, 200, 150, 0, "purple"],
-  //   [-60, 0, 1290, 200, 150, 0, "purple"],
-  //   [-280, 0, 890, 200, 150, 0, "red"],
-  //   [-490, 0, 890, 200, 150, 0, "red"],
-  //   [-670, 0, 890, 200, 150, 0, "red"]
-  // ];
-
   var gameMap = [
     [1, 1, 1, 1, 1, 0, 1],
     [-1, 0, 0, 0, 0, 0, -1],
@@ -36,6 +22,8 @@ function Game(canv) {
     [-1, 0, 0, 0, 0, 0, -1],
     [1, 0, 1, 1, 1, 1, 1]
   ];
+
+  //var gameMap = [[1]];
 
   var a = new CubeObject();
   a.init([100, -250, 0]);
@@ -86,15 +74,59 @@ function Game(canv) {
   }
 
   function update() {
+    if (!checkCollision()) {
+      cam.updatePosition();
+    }
     updateObjectPosition();
+    sortCubes();
+  }
+
+  function checkCollision() {
+    let currentPostion = cam.positon;
+    let nearObjects = getNearObjects(currentPostion);
+    let futurePosition = cam.getFutureLocation();
+
+    let collided = false;
+    for (ob of nearObjects) {
+      collided = checkIntersection(ob, futurePosition);
+      if (collided === true) {
+        break;
+      }
+    }
+    return collided;
+  }
+
+  function checkIntersection(object, camFuturePosition) {
+    console.log(object.sidePoints);
+    return false;
+  }
+
+  function getNearObjects(currentPostion) {
+    let minDist = 800;
+    let nearObject = [];
+    for (ob of objects) {
+      let objectPosition = ob.top;
+
+      diffX = objectPosition[0] - currentPostion[0];
+      // diffY = objectPosition[1] - currentPostion[1];
+      diffZ = objectPosition[2] - currentPostion[2];
+      if (
+        diffX < minDist &&
+        diffX > -minDist &&
+        (diffZ < minDist && diffZ > -minDist)
+      ) {
+        nearObject.push(ob);
+      }
+    }
+    return nearObject;
   }
 
   function updateObjectPosition() {
-    //sorting the cube
-    var [x1, y1, z1] = cam.positon;
+    //sorting the objects
+    let [x1, y1, z1] = cam.positon;
     //distance calculation
-    var distarray = [];
-    var counter = 0;
+    let distarray = [];
+    let counter = 0;
     for (ob of objects) {
       var [x2, y2, z2] = ob.top;
       var xdis = Math.pow(x2 - x1, 2);
@@ -120,6 +152,15 @@ function Game(canv) {
       return 0;
     } else {
       return a[0] < b[0] ? -1 : 1;
+    }
+  }
+
+  function sortCubes() {
+    //sorting the cube
+    for (ob of objects) {
+      if (ob.rotated === false) {
+        ob.sortCubes(cam.positon);
+      }
     }
   }
 
@@ -162,31 +203,7 @@ function Game(canv) {
     return [q, w];
   }
 
-  // function drawCube(facesList, color, type) {
-  //   for (j in facesList) {
-  //     //calculate direction of camera
-  //     //compare direction of camera and the direction of the cube faces
-  //     var face = facesList[j];
-  //     ctx.beginPath();
-
-  //     ctx.moveTo(face[0][0], face[0][1]);
-
-  //     // Draw the vector2 vertices
-  //     for (var k = 1, n_vertices = face.length; k < n_vertices; ++k) {
-  //       ctx.lineTo(face[k][0], face[k][1]);
-  //     }
-
-  //     // Close the path and draw the face
-  //     ctx.closePath();
-  //     if (type === 0) {
-  //       ctx.stroke();
-  //     }
-  //     ctx.fillStyle = colorType[j];
-  //     ctx.fill();
-  //   }
-  // }
-
-  function drawCube(facesList, color, type, camDirection = 0, direction) {
+  function drawCube(facesList, color, type, direction) {
     direction[3][2] = 100;
     for (j in facesList) {
       //calculate direction of camera
@@ -224,8 +241,8 @@ function Game(canv) {
         x > -limitRendering &&
         x < cw + limitRendering &&
         y > -limitRendering &&
-        y < ch + limitRendering //&&
-        //  vertexList[vertex][2] < 2000
+        y < ch + limitRendering &&
+        vertexList[vertex][2] < 5000
       ) {
         onscreen = true;
       } else {
@@ -283,61 +300,12 @@ function Game(canv) {
             facesList.push(coords);
           }
         }
-        let camDirection = directionOfCamera();
+
         //drawCube(facesList, cubeObject.color, cubeObject.Type);
-        drawCube(facesList, a.color, a.Type, camDirection, direction);
+        drawCube(facesList, a.color, a.Type, direction);
       }
     }
   }
-
-  // function drawTest() {
-  //   let cube = a.verti;
-
-  //   let vertexList = [];
-  //   let screen_coords = [];
-
-  //   for (var i of cube) {
-  //     var [q, w, e] = i;
-  //     [q, w, e] = TransformAndRotate(q, w, e);
-  //     vertexList.push([q, w, e]);
-  //     [q, w] = project(q, w, e);
-  //     screen_coords.push([q + dx, w + dy, e]);
-  //   }
-
-  //   facesList = [];
-  //   let direction = [];
-  //   let onscreen;
-
-  //   for (face of a.cubeFace) {
-  //     onscreen = false;
-  //     onscreen = checkCubeOnScreen(face, screen_coords, vertexList);
-  //     direction.push(calculateDirection(face, screen_coords));
-  //     if (onscreen) {
-  //       var coords = [];
-  //       for (var i of face) {
-  //         coords.push(screen_coords[i]);
-  //       }
-  //       facesList.push(coords);
-  //     }
-  //   }
-
-  //   let camDirection = directionOfCamera();
-  //   //   console.log(camDirection);
-  //   drawCube(facesList, a.color, a.Type, camDirection, direction);
-  // }
-
-  function directionOfCamera() {
-    let camDirection = subtract(a.position, cam.positon);
-    return camDirection;
-  }
-
-  // function makeWall() {
-  //   for (vertex of map) {
-  //     var wall = new Wall();
-  //     wall.makeWall(vertex);
-
-  //     objects.push(wall);
-  //   }
 
   function makeMaze() {
     for (let row in gameMap) {
@@ -392,7 +360,7 @@ function Game(canv) {
   }
 
   function move(event) {
-    cam.update(event.code);
+    cam.keydownUpdate(event.code);
   }
 
   function mouse(event) {
@@ -409,7 +377,8 @@ function Game(canv) {
     cam.mousedown = false;
   }
 
-  function reset() {
+  function reset(event) {
+    cam.resetDeltaPosition(event.code);
     cam.resetSpeed();
   }
 
@@ -420,5 +389,5 @@ function Game(canv) {
   document.addEventListener("mouseup", mouseup);
 }
 
-var game = new Game();
-game.init(document.getElementsByClassName("canvas")[0]);
+// var game = new Game();
+// game.init(document.getElementsByClassName("canvas")[0]);
