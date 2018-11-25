@@ -14,4 +14,9 @@ Checkout the source code:
 
 ## Core Logic 
 
-The Entire game has been build using simple javascript and does not include any external library of any kind so the code is easy enough to read for anybody wanting to know how the game was build. A brief discription of this would be that it uses all the concepts that any 3D game would use. The 3D World has been constructed using 3D boxes which were made using the concept of <strong> Vector Crossproduct</strong>. So the heart of the game itself revolves around vector crossproduct and also includes the prospective projection formula that converts a 3D coordinate system to 2D coordinate system to display on the screen
+The Entire game has been build using simple javascript and does not include any external library of any kind so the code is easy enough to read for anybody wanting to know how the game was build. A brief discription of this would be that it uses all the concepts that any 3D game would use.This game was constructed using 3D boxes which were made using the concept of <strong> Vector Crossproduct</strong>. So the heart of the game itself revolves around vector crossproduct and also includes the prospective projection formula that converts a 3D coordinate system to 2D coordinate system to display on the screen. Also a in depth understanding of how rotation and traslation work is very important as they play very significant role in creating the game.
+
+
+## References
+<a href="https://www.sitepoint.com/building-3d-engine-javascript/">https://www.sitepoint.com/building-3d-engine-javascript/</a>
+<a href ="https://www.youtube.com/watch?v=6i0B2X8_0to">https://www.youtube.com/watch?v=6i0B2X8_0to</a>
