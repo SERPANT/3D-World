@@ -50,5 +50,10 @@ function createCanvas() {
   center = document.getElementById("center");
   center.appendChild(container);
   var game = new Game();
+
+  document.addEventListener("keypress", game.move.bind(game.that));
+  document.addEventListener("keyup", game.reset.bind(game.that));
+  document.addEventListener("mousemove", game.mouse.bind(game.that));
+
   game.init(document.getElementsByClassName("canvas")[0]);
 }
