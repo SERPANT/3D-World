@@ -1,4 +1,4 @@
-# 3D-World
+# 3D-World Exploration
 https://serpant.github.io/3DWorld/
 This is a project to simulation a 3D World using only simple JavaScript
 
